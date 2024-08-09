@@ -12,6 +12,11 @@ def calculate_angles(p1, p2):
     phi = np.arctan2(delta[1], delta[0])  # azimuth angle
     return np.degrees(theta), np.degrees(phi)
 
+def angle_between_vectors(v1, v2):
+    cos_theta = np.dot(v1, v2) / (np.linalg.norm(v1) * np.linalg.norm(v2))
+    cos_theta = np.clip(cos_theta, -1.0, 1.0)  # Ensure cos_theta is within valid range for arccos
+    return np.degrees(np.arccos(cos_theta))
+
 def check_coplanarity(points):
     p0 = points[0]
     v1 = points[1] - p0
@@ -21,25 +26,22 @@ def check_coplanarity(points):
     volume = np.linalg.det(matrix)
     return np.isclose(volume, 0)
 
-def check_clashes(bend_points, inlet_points, radius=200):
-    logging.info(f"bend_points shape: {bend_points.shape}")
+def check_clashes(bend_points, inlet_points, radius=100):
     num_points = len(inlet_points)
     bottom_bend_points = bend_points[:num_points * 3].reshape(num_points, 3)
-    logging.info(f"bottom_bend_points shape: {bottom_bend_points.shape}")
     top_bend_points = bend_points[num_points * 3:].reshape(num_points, 3)
-    logging.info(f"top_bend_points shape: {top_bend_points.shape}")
     for i in range(len(bottom_bend_points)):
         for j in range(i + 1, len(bottom_bend_points)):
             if distance(bottom_bend_points[i], bottom_bend_points[j]) < radius:
+                logging.warning(f"Clash detected between bottom bend points {i} and {j}")
                 return True
             if distance(top_bend_points[i], top_bend_points[j]) < radius:
+                logging.warning(f"Clash detected between top bend points {i} and {j}")
                 return True
     return False
 
-def plot_lines_with_bends(inlet_points, bottom_bend_points, top_bend_points, outlet_points):
-    fig = plt.figure()
-    ax = fig.add_subplot(111, projection='3d')
-
+def plot_lines_with_bends(ax, inlet_points, bottom_bend_points, top_bend_points, outlet_points):
+    ax.clear()
     for i in range(len(inlet_points)):
         inlet_point = inlet_points[i]
         bottom_bend_point = bottom_bend_points[i]
@@ -48,13 +50,12 @@ def plot_lines_with_bends(inlet_points, bottom_bend_points, top_bend_points, out
 
         plot_lines(ax, inlet_point, bottom_bend_point, top_bend_point, outlet_point, i)
 
-    # Set labels
     ax.set_xlabel('X')
     ax.set_ylabel('Y')
     ax.set_zlabel('Z')
     ax.legend(loc='upper right')
-
-    plt.show()
+    plt.draw()
+    plt.pause(0.01)
 
 def plot_lines(ax, inlet_point, bottom_bend_point, top_bend_point, outlet_point, index):
     # Plot the line segments

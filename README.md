@@ -57,40 +57,40 @@ The optimization aims to adjust the coordinates of the bottom and top bend point
 
 ## Objectives
 
-Minimize Total Length: The primary objective is to minimize the total length of the lines. This includes the sum of the lengths of the segments from inlet points to bottom bend points, from bottom bend points to top bend points, and from top bend points to outlet points.
+1. **Minimize Total Length:** The primary objective is to minimize the total length of the lines. This includes the sum of the lengths of the segments from inlet points to bottom bend points, from bottom bend points to top bend points, and from top bend points to outlet points.
 Constraints
 
-Avoid Clashes: Ensure that the routing lines do not intersect. The check_clashes function checks if the lines are at least a certain distance apart (default is 200 mm).
+2. **Avoid Clashes:** Ensure that the routing lines do not intersect. The check_clashes function checks if the lines are at least a certain distance apart (default is 200 mm).
 
-Maintain Directions: The direction from inlet points to bottom bend points must be preserved.
+3. **Maintain Directions:** The direction from inlet points to bottom bend points must be preserved.
 
-Coplanarity of Bend Points: Both the bottom bend points and top bend points should be coplanar. This is checked using the check_coplanarity function.
+4. **Coplanarity of Bend Points:** Both the bottom bend points and top bend points should be coplanar. This is checked using the check_coplanarity function.
 
 ## Penalties
 
-Direction Penalty: A penalty is applied if the direction of the lines from the inlet points to the bottom bend points deviates significantly from the original direction. This is calculated in the direction_penalty function.
+1. **Direction Penalty:** A penalty is applied if the direction of the lines from the inlet points to the bottom bend points deviates significantly from the original direction. This is calculated in the direction_penalty function.
 
-Coplanarity Penalty: A large penalty is applied if the bottom bend points or the top bend points are not coplanar. This is calculated in the coplanarity_penalty function and ensures that the optimizer prioritizes coplanarity.
+2. **Coplanarity Penalty:** A large penalty is applied if the bottom bend points or the top bend points are not coplanar. This is calculated in the coplanarity_penalty function and ensures that the optimizer prioritizes coplanarity.
 
 ## Code Explanation
 
-main.py
+**main.py**
 Imports the necessary modules and functions.
 Loads the initial data from data.py.
 Runs the optimization function from optimization.py.
 Logs the optimized bend points and their angles.
 Plots the optimized lines.
 
-data.py
+**data.py**
 Contains the initial coordinates for inlet points, bottom bend points, top bend points, and outlet points.
 
-geometry.py
+**geometry.py**
 distance(p1, p2): Calculates the Euclidean distance between two points.
 calculate_angles(p1, p2): Calculates the angles between two points.
 check_coplanarity(points): Checks if a set of points are coplanar.
 check_clashes(bend_points, inlet_points, radius=200): Checks if any lines intersect or clash.
 
-optimization.py
+**optimization.py**
 optimize_bend_points(inlet_points, initial_bottom_bend_points, initial_top_bend_points, outlet_points): Optimizes the bend points to minimize the total length of the lines and ensure no intersections.
 Contains internal helper functions to calculate direction penalty, total length, and coplanarity penalty.
 
