@@ -1,6 +1,6 @@
 # Optical Routing Optimization
 
-This project aims to optimize the routing of optical lines from given inlet points to outlet points using a series of bend points. The optimization ensures that the routing lines do not intersect and minimizes the total length of the lines while keeping the bend points coplanar.
+This project aims to optimize the routing of optical lines from given inlet points to outlet points using a series of bend points. The optimization ensures that the routing lines do not intersect **within 200 mm** and minimizes the total length of the lines while keeping the inlet and outlet directions, and the bend angles close to **90 (****±10) degrees**.
 
 ## Project Structure
 
@@ -22,6 +22,7 @@ The project is divided into four main Python files:
 ## Usage
 
 1. **Define the data**: Update data.py with the inlet and outlet points, and initial bottom bend points, initial top bend points.
+
 ```bash
 # data.py
 import numpy as np
@@ -46,51 +47,60 @@ outlet_points = np.array([[initial_top_bend_points[i][0] + 5000, initial_top_ben
 ```
 
 2. **Run the optimization**: Execute the main.py script to start the optimization process.
+
 ```bash
    python main.py
-   ```
+```
+
 3. **View the results**: The script will output the optimized bend points and plot the lines. It will also log whether the bottom and top bend points are coplanar.
 
 ## What is Being Optimized
 
 The optimization aims to adjust the coordinates of the bottom and top bend points to achieve several objectives and constraints:
 
+![1723819706750](image/README/1723819706750.png)
+
+![1723819822345](image/README/1723819822345.png)![1723819875790](image/README/1723819875790.png)
+
 ## Objectives
 
 1. **Minimize Total Length:** The primary objective is to minimize the total length of the lines. This includes the sum of the lengths of the segments from inlet points to bottom bend points, from bottom bend points to top bend points, and from top bend points to outlet points.
-Constraints
-
+   Constraints
 2. **Avoid Clashes:** Ensure that the routing lines do not intersect. The check_clashes function checks if the lines are at least a certain distance apart (default is 200 mm).
-
 3. **Maintain Directions:** The direction from inlet points to bottom bend points must be preserved.
-
-4. **Coplanarity of Bend Points:** Both the bottom bend points and top bend points should be coplanar. This is checked using the check_coplanarity function.
 
 ## Penalties
 
-1. **Direction Penalty:** A penalty is applied if the direction of the lines from the inlet points to the bottom bend points deviates significantly from the original direction. This is calculated in the direction_penalty function.
+1. **Direction Penalty:** A large penalty is applied if the direction of the lines from the inlet points to the bottom bend points, and from the outlet points to the top bend points deviates significantly from the original directions. This is calculated in the direction_penalty function.
+2. **Clash Penalty:** A large penalty is applied if the distance between any two points is smaller than 200 mm. This is calculated in the clash_penalty function and ensures that the optimizer prioritizes solutions without clashes.
+3. **Angle Penalty:** A penalty is applied if the angles at the bottom bend points or the top bend points are far from 90 degrees. This is calculated in the angle_penalty function and ensures that the optimizer prioritizes bend angles close to 90 degrees.
+4. **Total Length:** The total length used as a penalty, this ensures that the optimizer minimizes the total length.
 
-2. **Coplanarity Penalty:** A large penalty is applied if the bottom bend points or the top bend points are not coplanar. This is calculated in the coplanarity_penalty function and ensures that the optimizer prioritizes coplanarity.
+![1723819949656](image/README/1723819949656.png)
 
 ## Code Explanation
 
-**main.py**
+### **main.py**
+
 Imports the necessary modules and functions.
 Loads the initial data from data.py.
 Runs the optimization function from optimization.py.
 Logs the optimized bend points and their angles.
 Plots the optimized lines.
 
-**data.py**
+### **data.py**
+
 Contains the initial coordinates for inlet points, bottom bend points, top bend points, and outlet points.
 
-**geometry.py**
+### **geometry.py**
+
 distance(p1, p2): Calculates the Euclidean distance between two points.
 calculate_angles(p1, p2): Calculates the angles between two points.
 check_coplanarity(points): Checks if a set of points are coplanar.
 check_clashes(bend_points, inlet_points, radius=200): Checks if any lines intersect or clash.
 
-**optimization.py**
+### **optimization.py**
+
 optimize_bend_points(inlet_points, initial_bottom_bend_points, initial_top_bend_points, outlet_points): Optimizes the bend points to minimize the total length of the lines and ensure no intersections.
 Contains internal helper functions to calculate direction penalty, total length, and coplanarity penalty.
 
