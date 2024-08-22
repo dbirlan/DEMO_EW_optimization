@@ -1,6 +1,6 @@
 # Optical Routing Optimization
 
-This project aims to optimize the routing of optical lines from given inlet points to outlet points using a series of bend points. The optimization ensures that the routing lines do not intersect **within 200 mm** and minimizes the total length of the lines while keeping the inlet and outlet directions, and the bend angles close to **90 (****±10) degrees**.
+This project aims to optimize the routing of optical lines from given inlet points to outlet points using a series of bend points. The optimization ensures that the routing lines do not intersect **within 200 mm** and minimizes the total length of the lines while keeping the inlet and outlet directions, and the bend angles close to **90 (±10) degrees**.
 
 ## Project Structure
 
